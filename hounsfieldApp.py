@@ -6,7 +6,7 @@ import qtmodern.windows
 
 
 app = QApplication([])
-app.setWindowIcon(QIcon('hounsfile.png'))
+app.setWindowIcon(QIcon('instrument.png'))
 #qtmodern.styles.dark(app)
 
 #window = qtmodern.windows.ModernWindow(MainWindow())

@@ -1,7 +1,3 @@
-
-from statistics import mean
-import csv
-import itertools
 from PyQt5.QtWidgets import (
     QMainWindow,
     QPushButton,
@@ -22,132 +18,18 @@ from PyQt5.QtWidgets import (
 )
 from PyQt5.QtCore import QThreadPool, Qt, QSize
 from PyQt5.QtGui import QIcon,QCursor, QPainter
+from widgets import (
+InputLabel,
+InputLine,
+UpTriAngleButton,
+DownTriAngleButton,
+BlackLabel,
+
+)
 from reader import Reader
 from graphgui import Graph
+from resultgui import TestWindow
 from setting import DisplacementControl, ForceDirection, GraphType, LengthDevice, Setting
-
-#class StartButton(QPushButton):
-#    def __init__(self,label):
-#        super().__init__(label)
-#        self.setCheckable(True)
-#        self.setFixedSize(120,120)
-#        self.setStyleSheet("""
-#        border-radius :60 ;
-#        border : 2px solid black;
-#        background-color: rgb(64,64,64); 
-#        color: rgb(255,255,255);
-#        font-size:28px;
-#        font-family: 'Courier New';
-#        """)
-#
-#class ForceAmountLabel(QLabel):
-#    def __init__(self,label):
-#        super().__init__(label)
-#       # self.setFixedSize(200,70)
-#        self.setStyleSheet("""
-#        color: green;
-#        font-size:20px;
-#        font-family: 'Calibri (Body)';
-#        """)
-#class ForceUnitLabel(QLabel):
-#    def __init__(self, label):
-#        super().__init__(label)
-#        self.setStyleSheet("""
-#        color: rgb(10,255,10);
-#        font-size:36px;
-#        font-family: 'Courier New';
-#        """)
-class InputLabel(QLabel):
-    def __init__(self,label):
-        super().__init__(label)
-        self.setStyleSheet("""
-        font-size:18px;
-        font-family: 'Courier New';
-        """)
-class InputLine(QLineEdit):
-    def __init__(self,*arg):
-        super().__init__(*arg)
-        self.setStyleSheet("""
-        
-        font-size:20px;
-        font-family: 'Courier New';
-        background: rgb(30,30,30);
-        color: white;
-        """)
-        self.setFixedWidth(50)
-        self.returnPressed.connect(self.return_press)
-    def return_press(self):
-        self.focusNextChild()
-#class RecButton(QPushButton):
-#    def __init__(self,*arg):
-#        super().__init__(*arg)
-#        self.setStyleSheet("""
-#        
-#        font-size:20px;
-#        font-family: 'Courier New';
-#        background: rgb(50,50,50);
-#        color: white;
-#
-#        """)
-#
-    
-
-#    def focusInEvent(self, a):
-#        self.parent().parent().calculate_button_click()
-        
-class UpTriAngleButton(QPushButton):
-    def __init__(self, text):
-        super().__init__(text)
-        self.setCheckable(True)
-        self.setCursor(QCursor(Qt.PointingHandCursor))
-        self.setFixedSize(QSize(90,90))
-        self.setStyleSheet("""
-        background-color:  rgba(0, 0, 0, 0) ;
-        """);
-        self.setIconSize(QSize(90,90))
-        self.setIcon(QIcon('upOff.png'))
-        
-    
-
-    def refresh(self):
-        if self.isChecked():
-            self.setIcon(QIcon('upOn.png'))
-        else:
-            self.setIcon(QIcon('upOff.png'))
-       
-        
-class DownTriAngleButton(QPushButton):
-    def __init__(self, text):
-        super().__init__(text)
-        self.setCheckable(True)
-        self.setCursor(QCursor(Qt.PointingHandCursor))
-        self.setFixedSize(QSize(90,90))
-        self.setStyleSheet("""
-        background-color:  rgba(0, 0, 0, 0) ;
-        """);
-        self.setIconSize(QSize(90,90))
-        self.setIcon(QIcon('downOff.png'))
-  
-    def refresh(self):
-        if self.isChecked():
-            self.setIcon(QIcon('downOn.png'))
-        else:
-            self.setIcon(QIcon('downOff.png'))
-
-class BlackLabel(QLabel):
-    def __init__(self,text):
-        super().__init__(text)
-        self.setStyleSheet("""
-        background: rgb(0,0,0);
-        color:white;
-        font-size:26px;
-        font-family: 'Courier New';
-        """)
-        
-#class BlackInput(QLineEdit):
-#    def __init__(self):
-#        super().__init__()
-
 
 
 class MainWindow(QMainWindow):
@@ -160,15 +42,24 @@ class MainWindow(QMainWindow):
       #  """)
         self.threadpool = QThreadPool()
         self.total_result = []
+        self.result_window = TestWindow(self.total_result)
         
         self.main_toolbar = QToolBar('main toolbar')
-        
         self.addToolBar(self.main_toolbar) 
-        self.connect_action = QAction(QIcon('upon.png'),"Connect To Instrument", self)
+        
+        self.connect_action = QAction(QIcon('inst.png'),"Connect To Instrument", self)
         self.connect_action.setStatusTip("Connect to Instrument")
         self.connect_action.triggered.connect(self.connect_to_tensile)
-        self.connect_action.setCheckable(True)
+        #self.connect_action.setCheckable(True)
         self.main_toolbar.addAction(self.connect_action) 
+        
+        self.result_action = QAction(QIcon('inst.png'),"Results Window", self)
+        self.result_action.setStatusTip("Results Window")
+        self.result_action.triggered.connect(self.show_result)
+        #self.result_action.setCheckable(True)
+        self.main_toolbar.addAction(self.result_action) 
+        
+        
         
         self.up_button = UpTriAngleButton('')
         self.down_button = DownTriAngleButton('')
@@ -195,7 +86,7 @@ class MainWindow(QMainWindow):
 
         self.rate_label = InputLabel('Rate')
         self.rate_input = InputLine()
-        self.rate_input.setMinimumSize(QSize(100,10))
+        #self.rate_input.setFixedSize(QSize(50,10))
         self.rate_layout = QHBoxLayout()
         
         self.rate_layout.addWidget(self.rate_label)
@@ -270,6 +161,8 @@ class MainWindow(QMainWindow):
         self.threadpool.start(self.reader)
         self.reader.signals.data.connect(self.receive_data)
         
+    def show_result(self):
+        self.result_window.show()
     def up_button_act (self,e):
         
         if self.up_button.isChecked():

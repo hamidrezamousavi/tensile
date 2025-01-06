@@ -2,7 +2,7 @@ from collections import namedtuple
 
 TensileOutput = namedtuple('data', 'force ext r100')
 
-
+Point = namedtuple('point', 'X Y')
 
 
 range_lookup_table = {

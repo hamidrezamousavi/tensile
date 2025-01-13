@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtGui import QIcon
 from gui import MainWindow
+#from sand_box import MainWindow
 import qtmodern.styles
 import qtmodern.windows
 

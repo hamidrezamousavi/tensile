@@ -17,8 +17,7 @@ class ReaderSignals(QObject):
     """
     Defines the signals available from a running worker thread.
 
-    data
-        tuple data point (unit, x, y)
+   
     """
 
     data = pyqtSignal(TensileOutput)  # <1>
@@ -55,13 +54,13 @@ class Reader(QRunnable):
             #unit = ''
             #raw_data = [1,'N']
             #convert data to float list   
-            data = self.tensile.read_data()
+            tensile_output = self.tensile.read_data()
             
         
-            self.forces.append(data.force)
-            self.r100.append(data.r100)
-            self.ext.append(data.ext)
-            self.signals.data.emit(data)
+            self.forces.append(tensile_output.force)
+            self.r100.append(tensile_output.r100)
+            self.ext.append(tensile_output.ext)
+            self.signals.data.emit(tensile_output)
     
 
     def close(self):

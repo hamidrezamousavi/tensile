@@ -7,7 +7,8 @@ from PyQt5.QtWidgets import (
     QButtonGroup,
     QRadioButton,
     QHBoxLayout,
-    QGridLayout
+    QGridLayout,
+    QGroupBox,
    )
 from PyQt5.QtCore import  Qt, QSize
 from PyQt5.QtGui import QIcon,QCursor
@@ -63,7 +64,6 @@ class InputLine(QLineEdit):
         self.setFixedSize(QSize(90,30))
         self.returnPressed.connect(self.return_press)
     def return_press(self):
-        
         self.focusNextChild()
 #class RecButton(QPushButton):
 #    def __init__(self,*arg):
@@ -125,27 +125,32 @@ class BlackLabel(QLabel):
     def __init__(self,text):
         super().__init__(text)
         self.setStyleSheet("""
-        background: rgb(0,0,0);
-        color:white;
-        font-size:26px;
+        background: rgba(0,0,0,20);
+        color:rgba(255,255,255,180);
+        font-size:14pt;
         font-family: 'Courier New';
+        border: 0;
         """)
-        
+class BorderlessGroupBox(QGroupBox):
+    def __init__(self):
+        super().__init__()
+        self.setStyleSheet("""border: 0;""")
+
 
 class ResultsTable(QTableWidget):
-    def __init__(self,labels= None, values = None):
+    def __init__(self,):
         super().__init__()
-        self.labels = labels
-        self.values = values
-
-        
-        self.setColumnCount(len(self.labels))
         self.setRowCount(1)
         self.verticalHeader().setHidden(True)
-        self.setHorizontalHeaderLabels(self.labels)
-        
-        for i,item in enumerate(self.values):
-            self.setItem(0,i,QTableWidgetItem(str(item)))
+   
+    def set_value(self,labels= None, values = None):
+            self.labels = labels
+            self.values = values
+            self.setColumnCount(len(self.labels))
+            self.setHorizontalHeaderLabels(self.labels)
+            for i,item in enumerate(self.values):
+                self.setItem(0,i,QTableWidgetItem(str(item)))
+
 
 class TwoRadioGroup(QGridLayout):
     def __init__(self,header,first_radio_name,first_radio_id, 

@@ -13,6 +13,8 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import  Qt, QSize
 from PyQt5.QtGui import QIcon,QCursor
 
+from pyqtgraph import LineROI
+
 #class StartButton(QPushButton):
 #    def __init__(self,label):
 #        super().__init__(label)
@@ -170,6 +172,19 @@ class TwoRadioGroup(QGridLayout):
         self.first_radio.setChecked(True)
 
         self.button_group.setExclusive(True)
+
     def check_id(self):
         return self.button_group.checkedId()
-    
+
+
+class SlopLine(LineROI):
+
+    def __init__(self,**kwargs):
+        super().__init__(**kwargs)
+
+       # self.addRotateHandle(pos = [1, 1], center=[0.5, 0.5])
+      #  self.addTranslateHandle(pos=(0, 0))
+        self.sigRegionChangeFinished.connect(self.test)
+
+    def test(self):
+        print('test',self.state)

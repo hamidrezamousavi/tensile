@@ -69,7 +69,7 @@ class Tensile:
         speed = bytes(speed, 'utf8')
         
         command = b'WV'+speed+b'\r'
-        print(command)
+      #  print(command)
         self.serial_port.write(command)
 
     def close(self):

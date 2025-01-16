@@ -44,7 +44,8 @@ class MainWindow(QMainWindow):
         #  """)
         self.threadpool = QThreadPool()
         self.total_result = []
-        self.result_window = ResultWindow(self.total_result)
+        self.connection = False
+
 
         self.main_toolbar = QToolBar('main toolbar')
         self.addToolBar(self.main_toolbar)
@@ -55,18 +56,24 @@ class MainWindow(QMainWindow):
         # self.connect_action.setCheckable(True)
         self.main_toolbar.addAction(self.connect_action)
 
-        self.result_action = QAction(QIcon('graph1.png'), "Results Window", self)
+        self.result_action = QAction(QIcon('graph3.png'), "Results Window", self)
         self.result_action.setStatusTip("Results Window")
         self.result_action.triggered.connect(self.show_result)
+
         # self.result_action.setCheckable(True)
         self.main_toolbar.addAction(self.result_action)
+
+        self.new_test_action = QAction(QIcon('new.png'), "New Test", self)
+        self.new_test_action.setStatusTip("New Test")
+        self.new_test_action.triggered.connect(self.new_test)
+        self.main_toolbar.addAction(self.new_test_action)
 
         self.up_button = UpTriAngleButton('')
         self.down_button = DownTriAngleButton('')
         self.up_button.clicked.connect(self.up_button_act)
-        self.up_button.clicked.connect(self.up_button.refresh)
+       # self.up_button.clicked.connect(self.up_button.refresh)
         self.down_button.clicked.connect(self.down_button_act)
-        self.down_button.clicked.connect(self.down_button.refresh)
+        #self.down_button.clicked.connect(self.down_button.refresh)
 
         self.button_layout = QVBoxLayout()
         self.button_layout.setAlignment(Qt.AlignCenter)
@@ -86,6 +93,8 @@ class MainWindow(QMainWindow):
 
         self.rate_label = InputLabel('Rate')
         self.rate_input = InputLine()
+        self.rate_input.returnPressed.connect(self.set_speed)
+        self.rate_input.textChanged.connect(self.set_speed)
         # self.rate_input.setFixedSize(QSize(50,10))
         self.rate_layout = QHBoxLayout()
 
@@ -152,12 +161,28 @@ class MainWindow(QMainWindow):
             return
         self.threadpool.start(self.reader)
         self.reader.signals.data.connect(self.receive_data)
+        self.connection = True
 
+    def set_speed(self):
+        if not self.connection:
+            self.rate_input.setText('')
+            self.connection_alert()
+            return
+        self.reader.tensile.set_speed(float(self.rate_input.text()))
     def show_result(self):
+        self.result_window = ResultWindow(self.total_result)
         self.result_window.show()
 
-    def up_button_act(self, e):
+    def new_test(self):
+        self.total_result = []
+        print(self.total_result)
+        self.graph.refresh_graph()
 
+    def up_button_act(self, e):
+        if not self.connection:
+            self.connection_alert()
+            return
+        self.up_button.refresh()
         if self.up_button.isChecked():
             if self.down_button.isChecked():
                 self.down_button.click()
@@ -177,6 +202,10 @@ class MainWindow(QMainWindow):
         # self.start_button.setText('START')
 
     def down_button_act(self, e):
+        if not self.connection:
+            self.connection_alert()
+            return
+        self.down_button.refresh()
         if self.down_button.isChecked():
             if self.up_button.isChecked():
                 self.up_button.click()
@@ -273,6 +302,16 @@ class MainWindow(QMainWindow):
         with open(self.file_path, 'w', newline='') as csvfile:
             writer = csv.writer(csvfile, dialect='excel', delimiter=';')
             writer.writerow(self.total_result)
+
+    def connection_alert(self):
+        # Ask for confirmation before closing
+
+       QMessageBox.critical(self, "Alert", "Connect to the Instrument",
+                                             )
+
+
+
+
 
     def closeEvent(self, event):
         # Ask for confirmation before closing

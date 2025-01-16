@@ -44,9 +44,10 @@ class Graph(PlotWidget):
         self.force_r100_line.setData( self.r100, self.forces )
  #       self.state_label.set_pos(self.getAxis('left'), self.getAxis('bottom'))
 
-    def refresh_line(self):
-        self.ext = []
-        self.r100 =[]
-        self.forces = []
-        self.line.setData(self.positions,self.forces)
-    
+    def refresh_graph(self):
+        self.ext=[]
+        self.r100=[]
+        self.forces=[]
+        self.force_ext_line.setData(self.ext, self.forces)
+        self.force_r100_line.setData(self.r100, self.forces)
+

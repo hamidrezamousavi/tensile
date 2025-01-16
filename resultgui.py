@@ -43,7 +43,7 @@ TwoRadioGroup,
 import util
 from data import data
 class ResultWindow(QMainWindow):
-    def __init__(self,data):
+    def __init__(self,data = None):
         super().__init__()
         
         self.data = data

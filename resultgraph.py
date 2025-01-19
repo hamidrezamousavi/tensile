@@ -10,20 +10,42 @@ from pyqtgraph import (
     CircleROI,
     LineROI,
     VerticalLabel,
-    TextItem
+    TextItem,
+    PolyLineROI,
+LineSegmentROI,
 
 )
-from widgets import (
-    SlopLine,
-)
+
 from PyQt5.QtWidgets import (
     QApplication,
     QMainWindow,
     QPushButton,
     QHBoxLayout,
     QWidget,
+
 )
-from time import time
+
+class SlopLine(LineSegmentROI):
+    def __init__(self,pos):
+        super().__init__(pos)
+        self.label = TextItem(text = '',anchor=(1,1))
+        self.label.setParentItem(self)
+
+        self.sigRegionChanged.connect(self.update)
+    def update(self):
+        if hasattr(self,'label'):
+            point1, point2 = self.getState()['points']
+            x = (point1.x() + point2.x())/2
+            y = (point1.y() + point2.y())/2
+            self.label.setPos(x,y)
+            try:
+                slop = (point2.y() - point1.y())/(point2.x() - point1.x())
+            except ZeroDivisionError:
+                slop = 'ZeroDivisionError'
+            self.label.setText(f'slop = {slop:0.3f}')
+
+           # self.label.setPos(2,3)
+
 
 
 class FreeTargetItem(TargetItem):
@@ -77,6 +99,7 @@ class Graph(PlotWidget):
 
         self.line.setData(self.points_x, self.points_y)
 
+
     def mouse_moved(self, evt):
         pos = evt
         mouse_point = self.getViewBox().mapSceneToView(pos)
@@ -84,7 +107,43 @@ class Graph(PlotWidget):
         self.v_line.setPos(mouse_point.x())
         self.v_h_line_value.setPos(mouse_point.x(),mouse_point.y())
         self.v_h_line_value.setText(f'{mouse_point.y():0.2f}\n{mouse_point.x():0.3f}')
-      
+      #  print(self.r.getState()['points'])
+  #  def mousePressEvent(self, ev):
+  #      pos = ev.pos()
+  #      if hasattr(self, 'aux_line'):
+  #          self.aux_line.clear()
+  #      self.mouse_point = self.getViewBox().mapSceneToView(pos)
+  #      self.begin_y = self.mouse_point.y()
+  #      self.begin_x = self.mouse_point.x()
+  #      self.aux_line = self.plot()
+#
+  #      self.getAxis('right').linkToView(None)
+  #      self.getAxis('left').linkToView(None)
+  #      print(self.getAxis('left'), self.getAxis('right'))
+  # #     return super().mousePressEvent(ev)
+#
+  #  def mouseMoveEvent(self, ev):
+  #      if hasattr(self, 'aux_line'):
+  #          self.aux_line.clear()
+  #          pos = ev.pos()
+  #          self.mouse_point = self.getViewBox().mapSceneToView(pos)
+  #          self.end_y = self.mouse_point.y()
+  #          self.end_x = self.mouse_point.x()
+  #       #   self.aux_line = self.plot()
+  #          self.aux_line.setData([self.begin_x, self.end_x],
+  #                                [self.begin_y, self.end_y])
+#
+
+ #   def mouseReleaseEvent(self, ev):
+ #        pos = ev.pos()
+ #        self.mouse_point = self.getViewBox().mapSceneToView(pos)
+ #        self.end_y = self.mouse_point.y()
+ #        self.end_x = self.mouse_point.x()
+     #    self.aux_line = self.plot(ignoreBounds=True)
+   #      self.aux_line.setData([self.begin_x, self.end_x],
+   #                            [self.begin_y, self.end_y])
+  #       return super().mouseReleaseEvent(ev)
+
 
 class GraphEnhanced(Graph):
     def __init__(self):
@@ -118,12 +177,16 @@ class GraphEnhanced(Graph):
         )
 
         self.addItem(self.break_marker)
+
+        self.slop_line = SlopLine([(min(self.points_x), min(self.points_y)),
+                                   (max(self.points_x), max(self.points_y))])
+        self.addItem(self.slop_line)
         #  self.slop_line = SlopLine(pos1=(0.4,0),pos2=(.6,100),width=0.0001)
         #  self.addItem(self.slop_line)
 
-        self.plot_modulu(data.elasticity_modulu[0], data)
-        self.plot_modulu(data.elasticity_modulu[1], data)
-        self.plot_modulu(data.elasticity_modulu[2], data)
+ #       self.plot_modulu(data.elasticity_modulu[0], data)
+  #      self.plot_modulu(data.elasticity_modulu[1], data)
+  #      self.plot_modulu(data.elasticity_modulu[2], data)
 
     def plot_modulu(self, modulu, data):
 

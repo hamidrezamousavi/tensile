@@ -177,14 +177,4 @@ class TwoRadioGroup(QGridLayout):
         return self.button_group.checkedId()
 
 
-class SlopLine(LineROI):
 
-    def __init__(self,**kwargs):
-        super().__init__(**kwargs)
-
-       # self.addRotateHandle(pos = [1, 1], center=[0.5, 0.5])
-      #  self.addTranslateHandle(pos=(0, 0))
-        self.sigRegionChangeFinished.connect(self.test)
-
-    def test(self):
-        print('test',self.state)

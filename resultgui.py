@@ -109,7 +109,7 @@ class ResultWindow(QMainWindow):
 
         self.graph1 = Graph()
         self.graph2 = GraphEnhanced()
-        self.graph3 = Graph()
+        self.graph3 = GraphEnhanced()
 
       #  self.dispalcement_choice.addWidget(QPushButton('sfsf'))
 

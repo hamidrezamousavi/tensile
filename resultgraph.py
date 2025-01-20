@@ -1,4 +1,5 @@
 from random import choice, choices, randint
+import copy
 from pyqtgraph import (
     PlotWidget,
     # Plot,
@@ -22,6 +23,7 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QHBoxLayout,
     QWidget,
+    QVBoxLayout,
 
 )
 
@@ -65,6 +67,7 @@ from util import Point
 class Graph(PlotWidget):
     def __init__(self):
         super().__init__()
+        self.larg_graph =  QWidget()
         self.showGrid(x=True, y=True)
         self.v_line = InfiniteLine(angle=90, movable=False)
         self.h_line = InfiniteLine(angle=0, movable=False)
@@ -76,15 +79,19 @@ class Graph(PlotWidget):
                 x_ax_label='x',
                 y_ax_label='y'):
         # self.title = title
+        self.data = data
+        self.title = title
+        self.x_ax_label = x_ax_label
+        self.y_ax_label = y_ax_label
         self.clear()
     #    self.target_item = FreeTargetItem()
         self.addItem(self.v_line, ignoreBounds=True)
         self.addItem(self.h_line, ignoreBounds=True)
         self.addItem(self.v_h_line_value,ignoreBounds=True)
     #    self.addItem(self.target_item)
-        self.setTitle(title, color='red', size="16px", font='courier')
-        self.setLabel('left', f'<span style=\"color:#02FD08;font-size:16px;\">{y_ax_label}</span>')
-        self.setLabel('bottom', f'<span style=\"color:#02FD08;font-size:16px\">{x_ax_label}</span>')
+        self.setTitle(self.title, color='red', size="16px", font='courier')
+        self.setLabel('left', f'<span style=\"color:#02FD08;font-size:16px;\">{self.y_ax_label}</span>')
+        self.setLabel('bottom', f'<span style=\"color:#02FD08;font-size:16px\">{self.x_ax_label}</span>')
 
         self.pen = mkPen(width=1, color=(255, 0, 0))
         self.line = self.plot(pen=self.pen)
@@ -93,7 +100,7 @@ class Graph(PlotWidget):
         self.points_y = []
         # self.line.setData(self.points_x, self.points_y )
         try:
-            self.points_x, self.points_y = data.curve
+            self.points_x, self.points_y = self.data.curve
         except:
             pass
 
@@ -107,6 +114,18 @@ class Graph(PlotWidget):
         self.v_line.setPos(mouse_point.x())
         self.v_h_line_value.setPos(mouse_point.x(),mouse_point.y())
         self.v_h_line_value.setText(f'{mouse_point.y():0.2f}\n{mouse_point.x():0.3f}')
+
+    def mouseDoubleClickEvent(self, event):
+        self.larg_graph = QWidget()
+        graph = Graph()
+        graph.refresh(data = self.data,title= self.title,
+                      x_ax_label=self.x_ax_label, y_ax_label=self.y_ax_label)
+        layout = QHBoxLayout()
+        layout.addWidget(graph)
+        self.larg_graph.setLayout(layout)
+        self.larg_graph.show()
+
+
       #  print(self.r.getState()['points'])
   #  def mousePressEvent(self, ev):
   #      pos = ev.pos()
@@ -187,6 +206,15 @@ class GraphEnhanced(Graph):
  #       self.plot_modulu(data.elasticity_modulu[0], data)
   #      self.plot_modulu(data.elasticity_modulu[1], data)
   #      self.plot_modulu(data.elasticity_modulu[2], data)
+    def mouseDoubleClickEvent(self, event):
+        self.larg_graph = QWidget()
+        graph = GraphEnhanced()
+        graph.refresh(data = self.data,title= self.title,
+                      x_ax_label=self.x_ax_label, y_ax_label=self.y_ax_label)
+        layout = QHBoxLayout()
+        layout.addWidget(graph)
+        self.larg_graph.setLayout(layout)
+        self.larg_graph.show()
 
     def plot_modulu(self, modulu, data):
 
@@ -208,7 +236,7 @@ class GraphEnhanced(Graph):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.button = QPushButton('test')
+        self.button = QPushButton('tes55t')
         self.button.clicked.connect(self.do)
         self.graph = Graph()
         self.layout = QHBoxLayout()

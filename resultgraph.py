@@ -1,20 +1,11 @@
-from random import choice, choices, randint
-import copy
+from random import choice
 from pyqtgraph import (
     PlotWidget,
-    # Plot,
     mkPen,
-    mkBrush,
-    mkColor,
     TargetItem,
     InfiniteLine,
-    CircleROI,
-    LineROI,
-    VerticalLabel,
     TextItem,
-    PolyLineROI,
-LineSegmentROI,
-
+    LineSegmentROI,
 )
 
 from PyQt5.QtWidgets import (
@@ -23,8 +14,6 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QHBoxLayout,
     QWidget,
-    QVBoxLayout,
-
 )
 
 class SlopLine(LineSegmentROI):
@@ -46,10 +35,6 @@ class SlopLine(LineSegmentROI):
                 slop = 'ZeroDivisionError'
             self.label.setText(f'slop = {slop:0.3f}')
 
-           # self.label.setPos(2,3)
-
-
-
 class FreeTargetItem(TargetItem):
     def __init__(self):
         super().__init__(symbol='+', size=20)
@@ -59,10 +44,6 @@ class FreeTargetItem(TargetItem):
         y = self.pos().y()
         self.setLabel(f'x = {x: >.3f}\ny = {y: >.3f}'),
         return super().mouseDragEvent(ev)
-
-
-from util import Point
-
 
 class Graph(PlotWidget):
     def __init__(self):
@@ -78,7 +59,6 @@ class Graph(PlotWidget):
                 title='add Title',
                 x_ax_label='x',
                 y_ax_label='y'):
-        # self.title = title
         self.data = data
         self.title = title
         self.x_ax_label = x_ax_label
@@ -117,6 +97,7 @@ class Graph(PlotWidget):
 
     def mouseDoubleClickEvent(self, event):
         self.larg_graph = QWidget()
+        self.larg_graph.setWindowTitle(self.title)
         graph = Graph()
         graph.refresh(data = self.data,title= self.title,
                       x_ax_label=self.x_ax_label, y_ax_label=self.y_ax_label)
@@ -124,45 +105,6 @@ class Graph(PlotWidget):
         layout.addWidget(graph)
         self.larg_graph.setLayout(layout)
         self.larg_graph.show()
-
-
-      #  print(self.r.getState()['points'])
-  #  def mousePressEvent(self, ev):
-  #      pos = ev.pos()
-  #      if hasattr(self, 'aux_line'):
-  #          self.aux_line.clear()
-  #      self.mouse_point = self.getViewBox().mapSceneToView(pos)
-  #      self.begin_y = self.mouse_point.y()
-  #      self.begin_x = self.mouse_point.x()
-  #      self.aux_line = self.plot()
-#
-  #      self.getAxis('right').linkToView(None)
-  #      self.getAxis('left').linkToView(None)
-  #      print(self.getAxis('left'), self.getAxis('right'))
-  # #     return super().mousePressEvent(ev)
-#
-  #  def mouseMoveEvent(self, ev):
-  #      if hasattr(self, 'aux_line'):
-  #          self.aux_line.clear()
-  #          pos = ev.pos()
-  #          self.mouse_point = self.getViewBox().mapSceneToView(pos)
-  #          self.end_y = self.mouse_point.y()
-  #          self.end_x = self.mouse_point.x()
-  #       #   self.aux_line = self.plot()
-  #          self.aux_line.setData([self.begin_x, self.end_x],
-  #                                [self.begin_y, self.end_y])
-#
-
- #   def mouseReleaseEvent(self, ev):
- #        pos = ev.pos()
- #        self.mouse_point = self.getViewBox().mapSceneToView(pos)
- #        self.end_y = self.mouse_point.y()
- #        self.end_x = self.mouse_point.x()
-     #    self.aux_line = self.plot(ignoreBounds=True)
-   #      self.aux_line.setData([self.begin_x, self.end_x],
-   #                            [self.begin_y, self.end_y])
-  #       return super().mouseReleaseEvent(ev)
-
 
 class GraphEnhanced(Graph):
     def __init__(self):
@@ -200,14 +142,10 @@ class GraphEnhanced(Graph):
         self.slop_line = SlopLine([(min(self.points_x), min(self.points_y)),
                                    (max(self.points_x), max(self.points_y))])
         self.addItem(self.slop_line)
-        #  self.slop_line = SlopLine(pos1=(0.4,0),pos2=(.6,100),width=0.0001)
-        #  self.addItem(self.slop_line)
 
- #       self.plot_modulu(data.elasticity_modulu[0], data)
-  #      self.plot_modulu(data.elasticity_modulu[1], data)
-  #      self.plot_modulu(data.elasticity_modulu[2], data)
     def mouseDoubleClickEvent(self, event):
         self.larg_graph = QWidget()
+        self.larg_graph.setWindowTitle(self.title)
         graph = GraphEnhanced()
         graph.refresh(data = self.data,title= self.title,
                       x_ax_label=self.x_ax_label, y_ax_label=self.y_ax_label)

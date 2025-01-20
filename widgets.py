@@ -6,46 +6,13 @@ from PyQt5.QtWidgets import (
     QTableWidgetItem,
     QButtonGroup,
     QRadioButton,
-    QHBoxLayout,
     QGridLayout,
     QGroupBox,
    )
 from PyQt5.QtCore import  Qt, QSize
 from PyQt5.QtGui import QIcon,QCursor
 
-from pyqtgraph import LineROI
 
-#class StartButton(QPushButton):
-#    def __init__(self,label):
-#        super().__init__(label)
-#        self.setCheckable(True)
-#        self.setFixedSize(120,120)
-#        self.setStyleSheet("""
-#        border-radius :60 ;
-#        border : 2px solid black;
-#        background-color: rgb(64,64,64); 
-#        color: rgb(255,255,255);
-#        font-size:28px;
-#        font-family: 'Courier New';
-#        """)
-#
-#class ForceAmountLabel(QLabel):
-#    def __init__(self,label):
-#        super().__init__(label)
-#       # self.setFixedSize(200,70)
-#        self.setStyleSheet("""
-#        color: green;
-#        font-size:20px;
-#        font-family: 'Calibri (Body)';
-#        """)
-#class ForceUnitLabel(QLabel):
-#    def __init__(self, label):
-#        super().__init__(label)
-#        self.setStyleSheet("""
-#        color: rgb(10,255,10);
-#        font-size:36px;
-#        font-family: 'Courier New';
-#        """)
 class InputLabel(QLabel):
     def __init__(self,label):
         super().__init__(label)
@@ -57,7 +24,6 @@ class InputLine(QLineEdit):
     def __init__(self,*arg):
         super().__init__(*arg)
         self.setStyleSheet("""
-        
         font-size:20px;
         font-family: 'Courier New';
         background: rgb(30,30,30);
@@ -67,23 +33,7 @@ class InputLine(QLineEdit):
         self.returnPressed.connect(self.return_press)
     def return_press(self):
         self.focusNextChild()
-#class RecButton(QPushButton):
-#    def __init__(self,*arg):
-#        super().__init__(*arg)
-#        self.setStyleSheet("""
-#        
-#        font-size:20px;
-#        font-family: 'Courier New';
-#        background: rgb(50,50,50);
-#        color: white;
-#
-#        """)
-#
-    
 
-#    def focusInEvent(self, a):
-#        self.parent().parent().calculate_button_click()
-        
 class UpTriAngleButton(QPushButton):
     def __init__(self, text):
         super().__init__(text)
@@ -95,8 +45,6 @@ class UpTriAngleButton(QPushButton):
         """);
         self.setIconSize(QSize(90,90))
         self.setIcon(QIcon('upOff.png'))
-        
-    
 
     def refresh(self):
         if self.isChecked():

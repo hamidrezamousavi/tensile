@@ -1,34 +1,15 @@
-import json
-
-
 from PyQt5.QtWidgets import (
     QMainWindow,
     QPushButton,
-    QLabel,
     QGridLayout,
     QWidget,
-    QTableWidget,
-    QLineEdit,
     QFileDialog,
-    QRadioButton,
-    QButtonGroup,
-    QGroupBox,
-    QVBoxLayout,
-    QHBoxLayout,
-    QMessageBox,
     QToolBar,
     QAction,
     QApplication,
-    QLabel,
-    QTableWidgetItem,
-
-
-
 )
-from PyQt5.QtCore import  Qt, QSize
 from PyQt5.QtGui import QIcon,QCursor
 from resultgraph import Graph, GraphEnhanced
-
 from engineering import (
     force_displacement_calculatoin,
     eng_stress_strain_calculatoin,
@@ -41,11 +22,9 @@ ResultsTable,
 TwoRadioGroup,
 )
 import util
-from data import data
 class ResultWindow(QMainWindow):
     def __init__(self,data = None):
         super().__init__()
-        
         self.data = data
         self.width = 0
         self.thickness = 0
@@ -53,91 +32,45 @@ class ResultWindow(QMainWindow):
         self.r100l0 = 0 
         self.setWindowTitle("Result")
         self.setGeometry(110, 110, 900, 700)
-
         self.tool_bar = QToolBar()
         self.addToolBar(self.tool_bar)
-
-
         self.save_action = QAction(text='Save Result', icon=QIcon('save1.png'))
         self.save_action.triggered.connect(self.save_result)
         self.tool_bar.addAction(self.save_action)
-
         self.print_action = QAction(text='print', icon=QIcon('print.png'))
         self.print_action.triggered.connect(self.print_result)
         self.tool_bar.addAction(self.print_action)
-
         self.load_action = QAction(text='Load Previous Result', icon=QIcon('load.png'))
         self.load_action.triggered.connect(self.load_result)
         self.tool_bar.addAction(self.load_action)
-
-
         self.thickness_label = InputLabel('Thickness')
         self.thickness_input = InputLine('')
-      #  self.thickness_input.returnPressed.connect(self.take_input)
         self.thickness_input.textChanged.connect(self.take_input)
         self.thickness_unit_label = InputLabel('mm')
-        #self.thickness_layout = QHBoxLayout()
-        #self.thickness_layout.addWidget(self.thickness_label)
-        #self.thickness_layout.addWidget(self.thickness_input)
-
-
         self.width_label = InputLabel('Width')
         self.width_input = InputLine('')
         self.width_input.textChanged.connect(self.take_input)
         self.width_unit_label = InputLabel('mm')
-        #self.width_layout = QHBoxLayout()
-        #self.width_layout.addWidget(self.width_label)
-        #self.width_layout.addWidget(self.width_input)
-
         self.extl0_label = InputLabel('Extension\'s L0')
         self.extl0_unit_label = InputLabel('mm')
         self.extl0_input = InputLine('')
         self.extl0_input.textChanged.connect(self.take_input)
-        #self.extl0_layout = QHBoxLayout()
-        #self.extl0_layout.addWidget(self.extl0_label)
-        #self.extl0_layout.addWidget(self.extl0_input)
-
         self.r100l0_label = InputLabel('100R Extension L0')
         self.r100l0_unit_label = InputLabel('mm')
         self.r100l0_input = InputLine('')
         self.r100l0_input.textChanged.connect(self.take_input)
 
-
         self.displacement_choice = TwoRadioGroup('Displacement Reading',
         'From Ext',1,'From 100R',2)
-
 
         self.graph1 = Graph()
         self.graph2 = GraphEnhanced()
         self.graph3 = GraphEnhanced()
-
-      #  self.dispalcement_choice.addWidget(QPushButton('sfsf'))
-
-        #self.r100l0_layout = QHBoxLayout()
-        #self.r100l0_layout.addWidget(self.r100l0_label)
-        #self.r100l0_layout.addWidget(self.r100l0_input)
-        
-        #self.input_section_layout = QVBoxLayout()
-        #self.input_section_layout.addLayout(self.width_layout)
-        #self.input_section_layout.addLayout(self.thickness_layout)
-        #self.input_section_layout.addLayout(self.extl0_layout)
-        #self.input_section_layout.addLayout(self.r100l0_layout)
-
-        #self.graph_layout = QVBoxLayout()
-        #self.graph_layout.addWidget(self.graph1)
-        #self.graph_layout.addWidget(self.graph2)
-        #self.graph_layout.addWidget(self.graph3)
-
-
-        #self.upper_layout = QHBoxLayout()
-        #self.upper_layout.addLayout(self.input_section_layout)
-        #self.upper_layout.addLayout(self.graph_layout)
         self.table = ResultsTable()
         self.show_graph_button = QPushButton('Show Graph')
         self.show_graph_button.clicked.connect(self.show_graph)
         self.layout = QGridLayout()
-        
-        
+
         self.layout.addWidget(self.thickness_label,0,0)
         self.layout.addWidget(self.thickness_input,0,1)
         self.layout.addWidget(self.thickness_unit_label,0,2)
@@ -157,17 +90,9 @@ class ResultWindow(QMainWindow):
         self.layout.addWidget(self.graph3,10,3,1,5)
         self.layout.addWidget(self.table, 15,0,4,8)
         self.layout.addWidget(self.show_graph_button,5,0)
-       # self.layout.setRowStretch(5,9)
-
-        
         self.w = QWidget()
         self.w.setLayout(self.layout)
         self.setCentralWidget(self.w)
-   # def keyPressEvent(self,e):
-   #     self.width = self.width_input.text()
-   #     self.thickness = self.thickness_input.text()
-   #     self.extl0 = self.extl0_input.text()
-   #     self.r100l0 = self.r100l0_input.text()
     def take_input(self):
         try:
             self.width = float(self.width_input.text())
@@ -185,8 +110,6 @@ class ResultWindow(QMainWindow):
             self.r100l0 = float(self.r100l0_input.text())
         except Exception:
             pass
-
-
 
     def show_graph(self):
         force_displacement = force_displacement_calculatoin(
@@ -232,8 +155,8 @@ class ResultWindow(QMainWindow):
      
         self.table.set_value(
             ['UTS', 'Strain at UTS','Strenght at Break',
-            'Strain at Break', 'Elasticity 1',
-            'Elasticity 2','Elasticity 3'],
+            'Strain at Break', 'Elasticity 3',
+            'Elasticity 10','Elasticity 50'],
             [eng_stress_strain.uts,
              eng_stress_strain.strain_at_uts,
              eng_stress_strain.stress_at_break,
@@ -268,8 +191,6 @@ class ResultWindow(QMainWindow):
                                  r100l0 = self.r100l0,
                                  data = self.data,
                                  )
-
-
     def load_result(self):
         self.file_dialog = QFileDialog()
         self.file_path = self.file_dialog.getOpenFileName( filter="Text (*.txt);;All  (*.*)")[0]
@@ -292,10 +213,6 @@ class ResultWindow(QMainWindow):
 
 if __name__ == '__main__':
     app = QApplication([])
-    
-#qtmodern.styles.dark(app)
-
-#window = qtmodern.windows.ModernWindow(MainWindow())
-    window =ResultWindow(data)
+    window =ResultWindow([])
     window.show()
     app.exec_()

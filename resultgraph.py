@@ -119,6 +119,8 @@ class GraphEnhanced(Graph):
                         x_ax_label=x_ax_label,
                         y_ax_label=y_ax_label)
 
+        if not data:
+            return
         self.uts_marker = TargetItem(
             pos=(data.strain_at_uts, data.uts),
             symbol='+',

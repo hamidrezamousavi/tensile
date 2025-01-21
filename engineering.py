@@ -35,6 +35,8 @@ def eng_stress_strain_calculatoin(*,data,
                                displacement_choice):
     strains = []
     stresses = []
+    properties = None
+
     try:    
         if displacement_choice == 1:    
             for item in data:
@@ -51,17 +53,17 @@ def eng_stress_strain_calculatoin(*,data,
                 stress = y/(width * thickness)
                 strains.append(strain)
                 stresses.append(stress)
+
+        properties = MattProperties()
+        properties.curve = (strains, stresses)
+        properties.uts , properties.strain_at_uts = find_uts(
+                                            stresses, strains)
+
+        properties.strain_at_break, properties.stress_at_break = \
+            find_strain_at_break(strains, stresses)
+        properties.elasticity_modulu = find_elasticity_modulu(strains, stresses)
     except :
         pass
-
-    properties = MattProperties()
-    properties.curve = (strains, stresses)
-    properties.uts , properties.strain_at_uts = find_uts(
-                                        stresses, strains)
-    
-    properties.strain_at_break, properties.stress_at_break = \
-        find_strain_at_break(strains, stresses)
-    properties.elasticity_modulu = find_elasticity_modulu(strains, stresses)
     return properties
 
 def real_stress_strain_calculatoin(*,data,

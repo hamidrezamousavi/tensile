@@ -90,16 +90,37 @@ class BorderlessGroupBox(QGroupBox):
 class ResultsTable(QTableWidget):
     def __init__(self,):
         super().__init__()
-        self.setRowCount(1)
-        self.verticalHeader().setHidden(True)
+
+        #self.verticalHeader().setHidden(True)
    
-    def set_value(self,labels= None, values = None):
+    def set_value(self,labels= None, data = None,eng_stress_strain = None ):
+            self.refresh()
+            self.setRowCount(len(data))
             self.labels = labels
-            self.values = values
+            self.data = data
             self.setColumnCount(len(self.labels))
             self.setHorizontalHeaderLabels(self.labels)
-            for i,item in enumerate(self.values):
-                self.setItem(0,i,QTableWidgetItem(str(item)))
+
+
+            for i,item in enumerate(data):
+                self.setItem(i,0,QTableWidgetItem(str(item.ext)))
+                self.setItem(i,1,QTableWidgetItem(str(item.r100)))
+                self.setItem(i,2,QTableWidgetItem(str(item.force)))
+
+            if not eng_stress_strain:
+                return
+
+            self.strains = eng_stress_strain.curve[0]
+            self.stresses = eng_stress_strain.curve[1]
+
+            for i,item in enumerate(self.strains):
+                self.setItem(i,3,QTableWidgetItem(f'{item:0.5f}'))
+            for i,item in enumerate(self.stresses):
+                self.setItem(i,4,QTableWidgetItem(f'{item:0.3f}'))
+    def refresh(self):
+        for i in range(self.rowCount()):
+            for j in range(self.columnCount()):
+                self.setItem(i, j, None)
 
 
 class TwoRadioGroup(QGridLayout):

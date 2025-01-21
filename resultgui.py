@@ -65,7 +65,7 @@ class ResultWindow(QMainWindow):
 
         self.graph1 = Graph()
         self.graph2 = GraphEnhanced()
-        self.graph3 = GraphEnhanced()
+       # self.graph3 = GraphEnhanced()
         self.table = ResultsTable()
         self.show_graph_button = QPushButton('Show Graph')
         self.show_graph_button.clicked.connect(self.show_graph)
@@ -84,12 +84,13 @@ class ResultWindow(QMainWindow):
         self.layout.addWidget(self.r100l0_input,3,1)
         self.layout.addWidget(self.r100l0_unit_label,3,2)
         self.layout.addLayout(self.displacement_choice,4,0)
+        self.layout.setRowStretch(4,0)
 
-        self.layout.addWidget(self.graph1,0,3,5,5)
-        self.layout.addWidget(self.graph2,5,3,1,5)
-        self.layout.addWidget(self.graph3,10,3,1,5)
-        self.layout.addWidget(self.table, 15,0,4,8)
-        self.layout.addWidget(self.show_graph_button,5,0)
+        self.layout.addWidget(self.graph1,0,3,7,5)
+        self.layout.addWidget(self.graph2,7,3,1,5)
+      #  self.layout.addWidget(self.graph3,10,3,1,5)
+        self.layout.addWidget(self.table, 7,0,1,3)
+        self.layout.addWidget(self.show_graph_button,6,0)
         self.w = QWidget()
         self.w.setLayout(self.layout)
         self.setCentralWidget(self.w)
@@ -148,23 +149,15 @@ class ResultWindow(QMainWindow):
                                r100l0 = self.r100l0,
                                displacement_choice = self.displacement_choice.check_id()
                                )
-        self.graph3.refresh(data = real_stress_strain, 
-                           title = 'Real Stress Strain',
-                           x_ax_label = 'Strain (mm/mm)',
-                           y_ax_label= ' Stress (Mpa)')
-     
+  #      self.graph3.refresh(data = real_stress_strain,
+  #                         title = 'Real Stress Strain',
+  #                         x_ax_label = 'Strain (mm/mm)',
+  #                         y_ax_label= ' Stress (Mpa)')
+  #
         self.table.set_value(
-            ['UTS', 'Strain at UTS','Strenght at Break',
-            'Strain at Break', 'Elasticity 3',
-            'Elasticity 10','Elasticity 50'],
-            [eng_stress_strain.uts,
-             eng_stress_strain.strain_at_uts,
-             eng_stress_strain.stress_at_break,
-             eng_stress_strain.strain_at_break,
-             eng_stress_strain.elasticity_modulu[0],
-             eng_stress_strain.elasticity_modulu[1],
-             eng_stress_strain.elasticity_modulu[2],
-            ])
+            ['Ext', 'R100','Force','Strain','Stress'],
+            self.data, eng_stress_strain
+            )
 
     def refresh_input(self):
         width = str(self.width)
